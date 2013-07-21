@@ -51,9 +51,12 @@ class Language(models.Model):
                 published='Y'
             )
 
-            current_language = current_languages[language.id]
+            try:
+                current_language = current_languages[language.id]
 
-            if model_to_dict(language) != model_to_dict(current_language):
+                if model_to_dict(language) != model_to_dict(current_language):
+                    language.save()
+            except KeyError:
                 language.save()
 
             languages[language.id] = language
@@ -62,7 +65,7 @@ class Language(models.Model):
         Vocabulary.batch_import(
             tree.findall('.//Name'),
             current_vocabularies,
-            current_languages
+            languages
         )
 
     class Meta:
